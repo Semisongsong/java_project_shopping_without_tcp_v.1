@@ -98,6 +98,7 @@ public class Login extends JFrame implements ActionListener {
 								System.out.println("쇼핑몰창 뜨게하기");
 								new ShoppingMall();
 								dispose();
+								
 
 							} else if (member.getLv() == 5) {
 								System.out.println("관리자창 뜨게 하기 관리자 객체를 관리자의 창으로 보내깅");

@@ -7,7 +7,7 @@ import javax.swing.table.*;
 
 public class test extends JFrame {
 	private final Object[] colNames = { "ChkBox", "이름", "나이", "성별" };
-	private Object[][] datas = { { false, "홍길동", "20", "남" }, { false, "김말자", "18", "여" } };
+	private Object[][] datas = { { false, "홍길동", "20", "남" }, { true, "김말자", "18", "여" } };
 
 	public test() {
 		super("JTable Tester");

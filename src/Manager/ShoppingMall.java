@@ -3,6 +3,7 @@ package Manager;
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +17,7 @@ import java.util.Scanner;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -29,6 +31,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import DB.GoodsDAO;
 
@@ -52,7 +55,6 @@ public class ShoppingMall extends JFrame {
 
 	private GoodsDAO dao = GoodsDAO.getInstance();
 	ArrayList<String[]> initList = new ArrayList<>();
-	// basketlist list = null;
 
 	public ShoppingMall() {
 		super("쇼핑몰");// super의 생성자 호출
@@ -61,9 +63,10 @@ public class ShoppingMall extends JFrame {
 		createtb();
 		tablesetting();
 
-		//createchkbox();
-
 		init();
+		createchkbox();
+		// createcombox();
+		changeCellEditor(table, null);
 
 		this.setLocation(300, 300);
 		this.setSize(size);
@@ -73,44 +76,83 @@ public class ShoppingMall extends JFrame {
 
 	}
 
+	public void changeCellEditor(JTable table, TableColumn column) {
+		TableColumn cntcombo = table.getColumnModel().getColumn(2);
+		// JComboBox<Integer> comboBox = new JComboBox<Integer>();
+		int num = 0;
+		// int[] aa = new int[];
+		JComboBox comboBox = new JComboBox();
+		ArrayList<Integer> arr = new ArrayList<>();
+		for (int i = 0; i < initList.size(); i++) {
+			num = Integer.parseInt(initList.get(i)[2]);
+			arr.add(num);
+			int[] aa = new int[num];
+			for (int j = 1; j < aa.length; j++) {
+				comboBox.addItem(j);
+				cntcombo.setCellEditor(new DefaultCellEditor(comboBox));
+			}
+		}
+	}
+
+//			System.out.println(num);
+//			for (int j = num; j >=num-1; j--) {
+//				comboBox.addItem(j);
+//				break;
+//
+//			}
+
+	private Object aa(int j) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private int parseInt(String string) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	private void createchkbox() {
-		table.getColumn("체크").setCellRenderer(dcr);
+
+//		JCheckBox box = new JCheckBox();
+//		table.getColumn("체크").setCellEditor(new DefaultCellEditor(box));
+//		box.setHorizontalAlignment(JLabel.CENTER);
+
+		Container c = getContentPane();
+		DefaultTableCellRenderer renderer = new MyCheckbox();
+		table.getColumn("체크").setCellRenderer(renderer);
 		JCheckBox box = new JCheckBox();
 		box.setHorizontalAlignment(JLabel.CENTER);
 		table.getColumn("체크").setCellEditor(new DefaultCellEditor(box));
 
+//		for (int i = 0; i < initList.size(); i++) {
+//			if (initList.get(i)[4].equals("false")) {
+//				Boolean ch = Boolean.valueOf(initList.get(i)[4]);
+//				box.setSelected(((Boolean) ch).booleanValue());
+//				System.out.println("?????");
+//			} else if (initList.get(i)[4].equals("true")) {
+//				Boolean ch = Boolean.valueOf(initList.get(i)[4]);
+//				box.setSelected(((Boolean) ch).booleanValue());
+//				System.out.println("!!!!!");
+//			}
+//		}
+		c.add(box);
 	}
 
-	DefaultTableCellRenderer dcr = new DefaultTableCellRenderer() {
-		public Component getTableCellRendererComponent // 셀렌더러
-		(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-			JCheckBox box = new JCheckBox();
-			box.setSelected(((Boolean) value).booleanValue());
-			box.setHorizontalAlignment(JLabel.CENTER);
-			return box;
-		}
-	};
-
 	private void init() {
-//		JCheckBox[] Order = new JCheckBox[2];
-//		String[] name = { "1", "2" };
-//		for (int i = 0; i < Order.length; i++) {
-//			Order[i] = new JCheckBox(name[i]); // 문자열을 갖는 체크박스 생성
-//			Order[i].setBorderPainted(true); // 체크박스의 외곽선(테두리) 보여주기
-//			tablemodel.addRow(Order);// 패널에 체크박스 부착하기
-//			Order[i].addItemListener(); // 체크박스에 리스너 등록
-//		}
-
+		String[] torf = null;
+		String real = null;
+		String[] real2 = new String[12];
+		String real3 = null;
 		initList = dao.getList();
 		for (int i = 0; i < initList.size(); i++) {
 			tablemodel.addRow(initList.get(i));
-			
+//			for (int j = 0; j < real2.length; j++) {
+//				real2[j] = initList.get(i)[4];
+//			}
 		}
-		
 
-		int rowNum = tablemodel.getRowCount();
 		int colNum = tablemodel.getColumnCount();
-
+		int rowNum = tablemodel.getRowCount();
 	}
 
 	public void tablesetting() {
@@ -163,16 +205,6 @@ public class ShoppingMall extends JFrame {
 
 		JTextField total = new JTextField(10);
 		south_north.add(total);
-
-//		JCheckBox ox = new JCheckBox();
-//		ox.add(forbox);
-
-//		Checkbox chk1 = new Checkbox("바나나");
-//		chk1.addItemListener(new ItemListener() {
-//			public void itemStateChanged(ItemEvent e) {
-//				total.setText("바나나  Checkbox : " + (e.getStateChange() == 1 ? "checked" : "unchecked"));
-//			}
-//		});
 
 		JButton addB = new JButton("장바구니에 담기");
 		south_north.add(addB);

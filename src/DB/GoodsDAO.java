@@ -29,6 +29,7 @@ public class GoodsDAO {
 	public boolean Insert(GoodsDTO dto) {
 		boolean result = false;
 		c.orclelode();
+		
 		try {
 			String sql = "insert into goods values(?,?,?,?,0)";
 			PreparedStatement psmt = conn.prepareStatement(sql);
