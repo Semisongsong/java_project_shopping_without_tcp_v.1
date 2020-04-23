@@ -14,14 +14,20 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import DB.MemberDAO;
+import DB.MemberDTO;
+import Manager.Setting;
+import Manager.ShoppingMall;
+
 public class Login extends JFrame implements ActionListener {
 	JPanel nP, cP, sP, eP;
 	JLabel idLabel, pwLabel, joinlabel;
 	JTextField idField, pwdField, loginField;
 	JButton loginBtn, joinBtn;
+	private MemberDAO dao = MemberDAO.getInstance();
 
-	Login() {
-		super("장바구니");
+	public Login() {
+		super("로그인");
 		createpanel();
 		setClose();
 	}
@@ -77,42 +83,6 @@ public class Login extends JFrame implements ActionListener {
 		this.setVisible(true);
 	}
 
-//	private void loginchk() {
-//		loginBtn.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				MemberDTO member = new MemberDTO();
-//				member.setId(idField.getText());
-//				member.setPwd(pwdField.getText());
-//
-//				try {
-//					MemberDAO dao = MemberDAO.getInstance();
-//					Boolean result = dao.loginchk(member);
-//					if (result == true) {
-//						if (member.getLv() == 1) {
-//							System.out.println("쇼핑몰창 뜨게하기");
-//						} else if (member.getLv() == 5) {
-//							System.out.println("관리자창 뜨게 하기 관리자 객체를 관리자의 창으로 보내깅");
-//						}
-//						JOptionPane.showMessageDialog(null, "로그인 완료");
-//						dispose();
-//					} else if (result == false) {
-//						JOptionPane.showMessageDialog(null, "존재하지 않는 아이디거나 비밀번호가 맞지 않습니다.");
-//						setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-//						idField.setText("");
-//						pwdField.setText("");
-//					}
-//
-//				} catch (Exception e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//
-//			}
-//
-//		});
-//	}
-
 	private void loginchk() {
 		loginBtn.addActionListener(new ActionListener() {
 			@Override
@@ -121,24 +91,32 @@ public class Login extends JFrame implements ActionListener {
 				try {
 					MemberDAO dao = MemberDAO.getInstance();
 					MemberDTO member = dao.loginchk(idField.getText());
-					// MemberDTO result = dao.loginchk2(member);
-					if (idField.getText().equals(member.getId()) && pwdField.getText().equals(member.getPwd())) {
-						JOptionPane.showMessageDialog(null, "로그인 완료");
-						if (member.getLv() == 1) {
-							System.out.println("쇼핑몰창 뜨게하기");
-						} else if (member.getLv() == 5) {
-							System.out.println("관리자창 뜨게 하기 관리자 객체를 관리자의 창으로 보내깅");
-							dispose();
+					if (member != null) {
+						if (idField.getText().equals(member.getId()) && pwdField.getText().equals(member.getPwd())) {
+							JOptionPane.showMessageDialog(null, "로그인 완료");
+							if (member.getLv() == 1) {
+								System.out.println("쇼핑몰창 뜨게하기");
+								new ShoppingMall();
+								dispose();
+
+							} else if (member.getLv() == 5) {
+								System.out.println("관리자창 뜨게 하기 관리자 객체를 관리자의 창으로 보내깅");
+								new Setting();
+								dispose();
+							}
+						} else {
+							JOptionPane.showMessageDialog(null, "존재하지 않는 아이디거나 비밀번호가 맞지 않습니다.");
+							setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+							idField.setText("");
+							pwdField.setText("");
 						}
-					} else {
+					} else if (member == null) {
 						JOptionPane.showMessageDialog(null, "존재하지 않는 아이디거나 비밀번호가 맞지 않습니다.");
 						setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 						idField.setText("");
 						pwdField.setText("");
 					}
-
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 

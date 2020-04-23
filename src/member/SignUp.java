@@ -25,6 +25,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.Document;
 
+import DB.MemberDAO;
+import DB.MemberDTO;
+
 public class SignUp extends JFrame {
 
 	private JPanel contentPane;
@@ -36,7 +39,7 @@ public class SignUp extends JFrame {
 	private JTextField tfName;
 	private JTextField tfAddress;
 	private JTextField tfPhone;
-	private MemberDAO dao = null;
+	private MemberDAO dao = MemberDAO.getInstance();
 
 	/**
 	 * Launch the application.
@@ -152,13 +155,26 @@ public class SignUp extends JFrame {
 	}
 
 	private void createbtn() {
-		btnsignup = new JButton("가입");
 		btncancel = new JButton("취소");
 		btncancel.setBounds(280, 440, 80, 29);
 		contentPane.add(btncancel);
+
+		btncancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				try {
+					JOptionPane.showMessageDialog(null, "회원가입을 취소합니다.");
+					dispose();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+
+		});
 		setSize(500, 600);
 		setVisible(true);
-		// setDefaultCloseOperation(EXIT_ON_CLOSE); //System.exit(0) //프로그램종료
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE); // dispose(); //현재창만 닫는다.
 	}
 
@@ -180,41 +196,25 @@ public class SignUp extends JFrame {
 			@Override
 			public void keyReleased(KeyEvent e) { // 키 눌렀다 땠을 때
 				String[] specialtxt = { "!", "@", "#", "$", "%", "^", "&", "*" };
-//				for (int i = 0; i < specialtxt.length; i++) {
-//					if (tfpwd.getText().indexOf(specialtxt[i]) != -1 && tfpwd.getText().length() >= 8) {
-//						chkpwd.setText("사용가능");
-//						break;
-//					} else if (tfpwd.getText().length() >= 1 && tfpwd.getText().length() < 8) {
-//						chkpwd.setText("8글자 미만");
-//
-//					} else if (tfpwd.getText().indexOf(specialtxt[i]) == -1) {
-//						chkpwd.setText("특수문자 미포함");
-//					}
-//					if (tfpwd.getText().isEmpty()) {
-//						chkpwd.setText("");
-//					}
-//
-//				}
 				for (int i = 0; i < specialtxt.length; i++) {
 					if (tfpwd.getText().indexOf(specialtxt[i]) == -1) { // 특수문자 없음
-						System.out.print(specialtxt[i]);
 						if (tfpwd.getText().length() < 8 && tfpwd.getText().length() >= 1) {
-							 chkpwd.setText("특수문자X 8글자 이하입니다.");
-		                     chkpwd.setForeground(new Color(153,000,000));
-		                  } else if (tfpwd.getText().length() >= 8) {
-		                     chkpwd.setText("특수문자X 8글자 이상입니다.");
-		                     chkpwd.setForeground(new Color(153,000,000));
-		                  }
+							chkpwd.setText("특수문자X 8글자 이하입니다.");
+							chkpwd.setForeground(new Color(153, 000, 000));
+						} else if (tfpwd.getText().length() >= 8) {
+							chkpwd.setText("특수문자X 8글자 이상입니다.");
+							chkpwd.setForeground(new Color(153, 000, 000));
+						}
 
-		               } else if(tfpwd.getText().indexOf(specialtxt[i])!=-1){
-		                  if (tfpwd.getText().length() < 8 && tfpwd.getText().length() >= 1) {
-		                     chkpwd.setText("특수문자O 8글자 이하입니다.");
-		                     chkpwd.setForeground(new Color(153,000,000));
-		                     break;
-		                  } else if (tfpwd.getText().length() >= 8) {
-		                     chkpwd.setText("사용가능한 비밀번호입니다.");
-		                     chkpwd.setForeground(new Color(000,102,000));
-		                     break;
+					} else if (tfpwd.getText().indexOf(specialtxt[i]) != -1) {
+						if (tfpwd.getText().length() < 8 && tfpwd.getText().length() >= 1) {
+							chkpwd.setText("특수문자O 8글자 이하입니다.");
+							chkpwd.setForeground(new Color(153, 000, 000));
+							break;
+						} else if (tfpwd.getText().length() >= 8) {
+							chkpwd.setText("사용가능한 비밀번호입니다.");
+							chkpwd.setForeground(new Color(000, 102, 000));
+							break;
 
 						}
 					}
@@ -247,7 +247,6 @@ public class SignUp extends JFrame {
 				member.setId(tfUsername.getText());
 
 				try {
-					MemberDAO dao = MemberDAO.getInstance();
 					Boolean result = dao.idchk(member);
 					if (result) {
 						JOptionPane.showMessageDialog(null, "이미 사용중인 아이디입니다.");
@@ -283,7 +282,6 @@ public class SignUp extends JFrame {
 				member.setAdr(tfAddress.getText());
 				member.setCell(tfPhone.getText());
 
-				MemberDAO dao = MemberDAO.getInstance();
 				Boolean result = dao.InsertMember(member);
 
 				if (result) {
