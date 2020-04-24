@@ -65,4 +65,21 @@ public class BasketlistDTO {
 		this.check = check;
 	}
 
+	public String[] getArray() {
+		String m = null;
+		String[] returnData = new String[5];
+		returnData[0] = String.valueOf(this.code);
+		returnData[1] = this.cname;
+		returnData[2] = String.valueOf(this.cnt);
+		returnData[3] = String.valueOf(this.price);
+		if (this.check == 0) {
+			m = "false";
+		} else if (this.check == 1) {
+			m = "true";
+		}
+		returnData[4] = m;
+
+		return returnData;
+	}
+
 }

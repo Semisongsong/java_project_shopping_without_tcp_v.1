@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -33,7 +34,10 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import DB.BasketlistDAO;
+import DB.BasketlistDTO;
 import DB.GoodsDAO;
+import member.BasketList;
 
 public class ShoppingMall extends JFrame {
 	Scanner in = new Scanner(System.in);
@@ -52,12 +56,21 @@ public class ShoppingMall extends JFrame {
 	JTextField tfield = null;
 
 	int modIntRow = -1;
+	int chk = 0;
+	int num = 0;
 
-	private GoodsDAO dao = GoodsDAO.getInstance();
+	private GoodsDAO gdao = GoodsDAO.getInstance();
+	BasketlistDAO dao = BasketlistDAO.getInstance();
 	ArrayList<String[]> initList = new ArrayList<>();
+	String id = null;
+	private BasketlistDTO dto = null;
+	ArrayList<String[]> goodsList = new ArrayList<>();
+	ArrayList<BasketlistDTO> rlist = new ArrayList<>();
 
-	public ShoppingMall() {
+	public ShoppingMall(String id) {
 		super("¼îÇÎ¸ô");// superÀÇ »ý¼ºÀÚ È£Ãâ
+		this.id = id;
+		System.out.println(id);
 		Dimension size = new Dimension(600, 400);
 		createpanel();
 		createtb();
@@ -66,7 +79,9 @@ public class ShoppingMall extends JFrame {
 		init();
 		createchkbox();
 		// createcombox();
-		changeCellEditor(table, null);
+
+		TableColumn column = null;
+		changeCellEditor(table, column);
 
 		this.setLocation(300, 300);
 		this.setSize(size);
@@ -77,41 +92,35 @@ public class ShoppingMall extends JFrame {
 	}
 
 	public void changeCellEditor(JTable table, TableColumn column) {
-		TableColumn cntcombo = table.getColumnModel().getColumn(2);
-		// JComboBox<Integer> comboBox = new JComboBox<Integer>();
-		int num = 0;
-		// int[] aa = new int[];
-		JComboBox comboBox = new JComboBox();
-		ArrayList<Integer> arr = new ArrayList<>();
-		for (int i = 0; i < initList.size(); i++) {
-			num = Integer.parseInt(initList.get(i)[2]);
-			arr.add(num);
-			int[] aa = new int[num];
-			for (int j = 1; j < aa.length; j++) {
-				comboBox.addItem(j);
-				cntcombo.setCellEditor(new DefaultCellEditor(comboBox));
+		// TableColumn cntcombo = table.getColumnModel().getColumn(2);
+		// int num = 0;
+		// int rowNum = tablemodel.getRowCount();
+
+		table.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getButton() == 1) {
+					modIntRow = table.getSelectedRow();
+					int ch = Integer.valueOf((String) table.getValueAt(table.getSelectedRow(), 2));
+					System.out.println(ch);
+					JComboBox box = new JComboBox();
+					int[] narray = null;
+					for (int i = 0; i < initList.size(); i++) {
+						num = Integer.parseInt(initList.get(i)[2]);
+						narray = new int[num];
+						for (int j = 1; j <= narray.length; j++) {
+							if (num == ch) {
+								System.out.println("°°´Ù ¸ØÃç¾ßÇØ");
+								box.addItem(j);
+							}
+						}
+						table.getColumn("¼ö·®").setCellEditor(new DefaultCellEditor(box));
+					}
+				}
 			}
-		}
+		});
 	}
 
-//			System.out.println(num);
-//			for (int j = num; j >=num-1; j--) {
-//				comboBox.addItem(j);
-//				break;
-//
-//			}
-
-	private Object aa(int j) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private int parseInt(String string) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	private void createchkbox() {
+	private void createchkboxt() {
 
 //		JCheckBox box = new JCheckBox();
 //		table.getColumn("Ã¼Å©").setCellEditor(new DefaultCellEditor(box));
@@ -138,21 +147,116 @@ public class ShoppingMall extends JFrame {
 		c.add(box);
 	}
 
-	private void init() {
-		String[] torf = null;
-		String real = null;
-		String[] real2 = new String[12];
-		String real3 = null;
-		initList = dao.getList();
-		for (int i = 0; i < initList.size(); i++) {
-			tablemodel.addRow(initList.get(i));
-//			for (int j = 0; j < real2.length; j++) {
-//				real2[j] = initList.get(i)[4];
-//			}
+	private void createchkbox() {
+		Container c = getContentPane();
+		JCheckBox box = new JCheckBox();
+		// Component comp = this;
+		box.setHorizontalAlignment(JLabel.CENTER);
+		table.getColumn("Ã¼Å©").setCellEditor(new DefaultCellEditor(box));
+		box.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				box.setBorderPainted(true);
+				box.setHorizontalAlignment(JLabel.CENTER);
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					modIntRow = table.getSelectedRow();
+					String in[] = new String[5];
+					for (int i = 0; i < table.getColumnCount() - 1; i++) {
+						in[i] = (String) table.getValueAt(table.getSelectedRow(), i);
+						chk = 1;
+					}
+					System.out.println("chk: " + chk);
+					in[4] = String.valueOf(table.getSelectedRow());
+
+					if (chk == 1) {
+						String[] sarray = new String[5];
+						for (int i = 0; i < table.getColumnCount(); i++) {
+							String g = String.valueOf(table.getValueAt(table.getSelectedRow(), i));
+							sarray[i] = g;
+						}
+						goodsList.add(sarray);
+					}
+					for (String[] a : goodsList) {
+						for (int i = 0; i < a.length; i++) {
+							System.out.println("sarray" + "[" + i + "]" + a[i]);
+						}
+
+					}
+				}
+			}
+		});
+	}
+
+	private void makesDTO(String id, ArrayList<String[]> goodsList, int chk) {
+		for (int j = 0; j < goodsList.size(); j++) {
+			dto = new BasketlistDTO();
+			dto.setId(id);
+			int code = Integer.parseInt(goodsList.get(j)[0]);
+			dto.setCode(code);
+			dto.setCname(goodsList.get(j)[1]);
+			int cnt = Integer.parseInt(goodsList.get(j)[2]);
+			dto.setCnt(cnt);
+			int price = Integer.parseInt(goodsList.get(j)[3]);
+			dto.setPrice(price);
+			dto.setCheck(chk);
+			rlist.add(dto);
+		}
+		for (int j = 0; j < rlist.size(); j++) {
+			System.out.println("----------------------------");
+			System.out.println("rlist: " + rlist.get(j).getId());
 		}
 
-		int colNum = tablemodel.getColumnCount();
+	}
+
+	private void gotoInsert(BasketlistDTO dto) {
+		for (int j = 0; j < rlist.size(); j++) {
+			dao.Insert(rlist.get(j));
+		}
+
+	}
+
+//	private DefaultTableCellRenderer dcr = new DefaultTableCellRenderer() {
+//		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+//				int row, int column) {
+//			Component comp = null;
+//
+//			if (column == 4) {
+//				JCheckBox box = new JCheckBox();
+//				box.setBorderPainted(true);
+//				box.setHorizontalAlignment(JLabel.CENTER);
+//				comp = box;
+//			}
+//			return comp;
+//		}
+//	};
+
+//	protected void makesDTO(BasketlistDTO) {
+//		this.id = id;
+//
+//	}
+
+	private void saveToDB(String id, ArrayList<String> goodsList, int chk) {
+		dto = new BasketlistDTO();
+		dto.setId(id);
+		int code = Integer.parseInt(goodsList.get(0));
+		dto.setCode(code);
+		dto.setCname(goodsList.get(1));
+		int cnt = Integer.parseInt(goodsList.get(2));
+		dto.setCnt(cnt);
+		int price = Integer.parseInt(goodsList.get(3));
+		dto.setPrice(price);
+		dto.setCheck(chk);
+		dao.Insert(dto);
+	}
+
+	private void init() {
+		initList = gdao.getList();
+		for (int i = 0; i < initList.size(); i++) {
+			tablemodel.addRow(initList.get(i));
+		}
 		int rowNum = tablemodel.getRowCount();
+		int colNum = tablemodel.getColumnCount();
 	}
 
 	public void tablesetting() {
@@ -213,16 +317,10 @@ public class ShoppingMall extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				String in[] = new String[5];
-				// for (int i = 0; i < txtfield.length; i++) {
-				// in[i] = txtfield[i].getText();
-				// txtfield[i].setText("");
-				// }
-				// int sum = Integer.parseInt(in[3]) * Integer.parseInt(in[4]);
-				// in[5] = Integer.toString(sum);
-				// dto = new DTO();
-				// dto.setTotal(in[5]);
 				tablemodel.addRow(in);
-				// saveToDB(in);
+				makesDTO(id, goodsList, chk);
+				gotoInsert(dto);
+				// new BasketList(id);
 			}
 
 		});
@@ -233,16 +331,6 @@ public class ShoppingMall extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				String in[] = new String[5];
-				// for (int i = 0; i < txtfield.length; i++) {
-				// in[i] = txtfield[i].getText();
-				// txtfield[i].setText("");
-				// }
-				// int sum = Integer.parseInt(in[3]) * Integer.parseInt(in[4]);
-				// in[5] = Integer.toString(sum);
-				// delTableRow(modIntRow);
-				// tablemodel.insertRow(modIntRow, in);
-				// dto = new DTO();
-				// editToDB(in);
 				modIntRow = -1;
 			}
 		});

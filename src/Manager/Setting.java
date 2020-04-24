@@ -182,7 +182,7 @@ public class Setting extends JFrame {
 				for (int i = 0; i < txtfield.length; i++) {
 					in[i] = txtfield[i].getText();
 					txtfield[i].setText("");
-					new ShoppingMall();
+					//new ShoppingMall(id);
 				}
 
 			}

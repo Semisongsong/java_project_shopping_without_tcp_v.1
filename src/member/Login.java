@@ -96,9 +96,8 @@ public class Login extends JFrame implements ActionListener {
 							JOptionPane.showMessageDialog(null, "로그인 완료");
 							if (member.getLv() == 1) {
 								System.out.println("쇼핑몰창 뜨게하기");
-								new ShoppingMall();
+								new ShoppingMall(member.getId());
 								dispose();
-								
 
 							} else if (member.getLv() == 5) {
 								System.out.println("관리자창 뜨게 하기 관리자 객체를 관리자의 창으로 보내깅");
